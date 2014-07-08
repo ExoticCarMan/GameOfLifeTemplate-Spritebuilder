@@ -20,6 +20,25 @@ static const int GRID_COLUMNS = 10;
     float _cellHeight;
 }
 
+- (void)touchBegan:(UITouch *)touch withEvent:(UIEvent *)event {
+    //get x,y coord of touch
+    CGPoint touchLocation = [touch locationInNode:self];
+    
+    //get Creature at touch location
+    Creature *creature = [self creatureForTouchPosition:touchLocation];
+    
+    //invert its state - kill if alive, ressurect if dead
+    creature.isAlive = !creature.isAlive;
+}
+
+- (Creature *)creatureForTouchPosition:(CGPoint)touchPosition {
+    //get row and column that was touched, return Creature inside the corresponding cell
+    int row = touchPosition.y/_cellHeight;
+    int column = touchPosition.x/_cellWidth;
+    
+    return _gridArray[row][column];
+}
+
 - (void)onEnter {
     [super onEnter];
     [self setupGrid];
@@ -55,7 +74,7 @@ static const int GRID_COLUMNS = 10;
             
             //make creature visible to test method
             //set to false after visibility test
-            creature.isAlive = true;
+            //creature.isAlive = true;
             
             x+=_cellWidth;
         }
