@@ -117,7 +117,7 @@ static const int GRID_COLUMNS = 10;
                     // skip over all cells that are off screen AND the cell that contains the creature we are currently updating
                     if (!((x == i) && (y == j)) && isIndexValid) {
                         Creature *neighbor = _gridArray[x][y];
-                        if (neighbor.isAlive) {currentCreature.livingNeighbors++;}
+                        if (neighbor.isAlive) {currentCreature.livingNeighbors+=1;}
                     }
                 }
             }
