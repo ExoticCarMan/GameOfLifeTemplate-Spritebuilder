@@ -145,18 +145,13 @@ static const int GRID_COLUMNS = 10;
         {
             // access the creature in the cell that corresponds to the current row/column
             Creature *currentCreature = _gridArray[i][j];
-            // check that the cell we're checking isn't off the screen
-//            BOOL isIndexValid = [self isIndexValidForX:x andY:y];
-            
-            // skip over all cells that are off screen
-//            if (isIndexValid) {
-                if (currentCreature.livingNeighbors == 3) {
-                    currentCreature.isAlive = true;
-                }
-                else if (currentCreature.livingNeighbors <= 1 || currentCreature.livingNeighbors >= 4) {
-                    currentCreature.isAlive = false;
-                }
-            //}
+
+            if (currentCreature.livingNeighbors == 3) {
+                currentCreature.isAlive = true;
+            }
+            else if (currentCreature.livingNeighbors <= 1 || currentCreature.livingNeighbors >= 4) {
+                currentCreature.isAlive = false;
+            }
         }
     }
 }
