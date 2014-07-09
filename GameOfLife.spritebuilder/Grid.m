@@ -28,7 +28,7 @@ static const int GRID_COLUMNS = 10;
     Creature *creature = [self creatureForTouchPosition:touchLocation];
     
     //invert its state - kill if alive, ressurect if dead
-    creature.isAlive != creature.isAlive;
+    creature.isAlive = !creature.isAlive;
 }
 
 - (Creature *)creatureForTouchPosition:(CGPoint)touchPosition {
@@ -80,6 +80,98 @@ static const int GRID_COLUMNS = 10;
         }
         
         y+=_cellHeight;
+    }
+}
+
+- (void)evolveStep {
+    //update each Creature's neighbor count
+    [self countNeighbors];
+     
+    //update each Creature's current state
+    [self updateCreatures];
+    
+    //update generation label
+    _generation++;
+}
+
+- (int)countNeighbors {
+    //iterate through rows
+    //NSArray has method 'count' that returns # of elements in array
+    for (int i = 0; i < [_gridArray count]; i++) {
+        //iterate through columns in row
+        for (int j = 0; j < [_gridArray[i] count]; j++) {
+            //access creature in cell that corresponds to row/column
+            Creature *currentCreature = _gridArray[i][j];
+            
+            //every Creature has 'livingNeighbors' property created earlier
+            currentCreature.livingNeighbors = 0;
+            
+            //examine every cell around current one
+            // go through the row on top of current cell, the row cell is in, and the row past current cell
+            for (int x = (i-1); x <= i+1; x++) {
+                // go through the column to the left of the current cell, the column the cell is in, and the column to the right of the current cell
+                for (int y = (j-1); x <= j+1; y++) {
+                    //check that cell we're checking off isn't on screen
+                    BOOL isIndexValid = [self isIndexValidForX:x andY:y];
+                    
+                    // skip over all cells that are off screen AND the cell that contains the creature we are currently updating
+                    if (!((x == i) && (y == j)) && isIndexValid) {
+                        Creature *neighbor = _gridArray[x][y];
+                        if (neighbor.isAlive) {currentCreature.livingNeighbors++;}
+                    }
+                }
+            }
+        }
+    }
+}
+
+- (BOOL)isIndexValidForX:(int)x andY:(int)y
+{
+    BOOL isIndexValid = YES;
+    if(x < 0 || y < 0 || x >= GRID_ROWS || y >= GRID_COLUMNS)
+    {
+        isIndexValid = NO;
+    }
+    return isIndexValid;
+}
+
+- (BOOL)updateCreatures {
+    // iterate through the rows
+    // note that NSArray has a method 'count' that will return the number of elements in the array
+    for (int i = 0; i < [_gridArray count]; i++)
+    {
+        // iterate through all the columns for a given row
+        for (int j = 0; j < [_gridArray[i] count]; j++)
+        {
+            // access the creature in the cell that corresponds to the current row/column
+            Creature *currentCreature = _gridArray[i][j];
+            
+            // remember that every creature has a 'livingNeighbors' property that we created earlier
+            currentCreature.livingNeighbors = 0;
+            
+            // now examine every cell around the current one
+            
+            // go through the row on top of the current cell, the row the cell is in, and the row past the current cell
+            for (int x = (i-1); x <= (i+1); x++)
+            {
+                // go through the column to the left of the current cell, the column the cell is in, and the column to the right of the current cell
+                for (int y = (j-1); y <= (j+1); y++)
+                {
+                    // check that the cell we're checking isn't off the screen
+                    BOOL isIndexValid = [self isIndexValidForX:x andY:y];
+                    
+                    // skip over all cells that are off screen AND the cell that contains the creature we are currently updating
+                    if (!((x == i) && (y == j)) && isIndexValid) {
+                        if (currentCreature.livingNeighbors == 3) {
+                            currentCreature.isAlive = true;
+                        }
+                        else if (currentCreature.livingNeighbors <= 1 || currentCreature.livingNeighbors >= 4) {
+                            currentCreature.isAlive = false;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
